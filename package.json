@@ -1,0 +1,20 @@
+{
+  "name": "thor-tpl",
+  "version": "1.0.0",
+  "description": "A simple JS Template Engine",
+	"main": "index.js",
+  "author": "Thor Qin",
+  "license": "MIT",
+	"private": false,
+	"repository": {
+		"type": "git",
+		"url": "https://gitee.com/thor.qin/thor-tpl.git"
+	},
+  "devDependencies": {
+    "eslint": "^6.0.1",
+    "jest": "^24.8.0"
+  },
+  "scripts": {
+    "test": "jest"
+  }
+}

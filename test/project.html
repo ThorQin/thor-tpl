@@ -1,0 +1,9 @@
+{{@arg i,p}}
+{{@fn range, include}}
+<!-- PROJECT -->
+<h3>Project {{i}} : {{p}}</h3>
+<table width="100%">
+{{@loop i of range(10)}}
+	<tr style="background-color:{{i % 2 == 1?'#c0c0c0':'#fff'}}"><td>测试行:{{i}}</td></tr>
+{{@end loop}}
+</table>
