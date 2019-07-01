@@ -258,7 +258,7 @@ function compile(template, options = null) {
 	func += '\treturn _src_;';
 	let fn = new Fn('$data', '$fn', func);
 	if (options && typeof options.trace === 'function') {
-		options.trace(fn.toString(), options);
+		options.trace(fn, options);
 	}
 	return fn;
 }
