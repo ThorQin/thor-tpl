@@ -10,9 +10,9 @@
 			"protocol": "inspector",
 			"name": "Jest Debug",
 			"program": "${workspaceRoot}/node_modules/jest/bin/jest",
-			"args": ["--runInBand", "--env=node", "${fileBasename}"],
+			"args": ["--runInBand", "--env=node"],
 			"runtimeArgs": [
-        "--inspect-brk"
+				"--inspect-brk"
 			],
 			"cwd": "${workspaceRoot}",
 			"sourceMaps": true,

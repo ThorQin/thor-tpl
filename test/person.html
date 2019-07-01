@@ -1,15 +1,11 @@
 {{@arg persons, projects, flag}}
 {{@fn range, include}}
-<div>
-	{{@loop i : person of persons}}
+<div>{{@loop i : person of persons}}
 	<div>
 		<h1 style="background-color:#7090ff">
 			Person {{i}} : {{person}}
-		</h1>
-		{{@loop i:p of projects}}
-			{{@unsafe await include('project.html', {i:i, p:p}, $fn)}}
-		{{@end loop}}
-	</div>
-	{{@end loop}}
-</div>
+		</h1>{{@loop i:p of projects}}
+		{{@unsafe await include('project.html', {i:i, p:p}, $fn)}}
+	{{@end loop}}</div>
+{{@end loop}}</div>
 

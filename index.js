@@ -1,20 +1,10 @@
-const cache = {};
+const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
 function getFn(template, options) {
 	if (typeof template === 'function') {
 		return template;
 	}
-	let fn;
-	if (options && options.file) {
-		fn = cache[options.file];
-		if (!fn) {
-			fn = compile(template, options);
-			cache[options.file] = fn;
-		}
-	} else {
-		fn = compile(template, options);
-	}
-	return fn;
+	return compile(template, options);
 }
 
 async function renderAsync(template, data, options) {
@@ -251,8 +241,8 @@ function compile(template, options = null) {
 	if (pos < template.length) {
 		src += addSrcText(template.substring(pos));
 	}
-	let func = `(${options.useAsync ? 'async ' : ''}function ($data, $fn) {\n`;
-	func += '\t"use strict";\n';
+	let Fn = options.useAsync ? AsyncFunction : Function;
+	let func = '\t"use strict";\n';
 	if (useSafeText) {
 		func += `\tconst _SMAP = ${JSON.stringify(_SMAP)};\n`;
 		func += _safe.toString().replace(/^/gm, '\t') + '\n';
@@ -265,12 +255,12 @@ function compile(template, options = null) {
 		func += `\tvar {${fns.join(', ')}} = $fn || {};\n`;
 	}
 	func += src;
-	func += '\treturn _src_;\n';
-	func += '})\n';
+	func += '\treturn _src_;';
+	let fn = new Fn('$data', '$fn', func);
 	if (options && typeof options.trace === 'function') {
-		options.trace(func, options);
+		options.trace(fn.toString(), options);
 	}
-	return eval(func);
+	return fn;
 }
 
 module.exports = {

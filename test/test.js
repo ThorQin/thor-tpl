@@ -1,15 +1,16 @@
-const eht = require('..');
+const tpl = require('..');
 const fs = require('fs').promises;
 const path = require('path');
 
 async function loadPage(file, data, options) {
 	let env = {
 		fn: options.fn,
-		trace: options.trace,
-		file: file
+		trace: (func) => {
+			save(`build/${file}.js`, func);
+		},
 	};
 	let text = await fs.readFile(path.join(__dirname, file));
-	return await eht.renderAsync(text.toString(), data, env);
+	return await tpl.renderAsync(text.toString(), data, env);
 }
 
 async function save(file, content) {
@@ -48,9 +49,7 @@ test('Test render page', async () => {
 				return await loadPage(file, data, options);
 			}
 		},
-		trace: (func, options) => {
-			save(`build/${options.file}.js`, func);
-		}
+
 	};
 	let html = await loadPage('person.html', data, options);
 	await save('build/out.html', html);
