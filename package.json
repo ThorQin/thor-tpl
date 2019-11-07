@@ -1,6 +1,6 @@
 {
   "name": "thor-tpl",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A simple JS Template Engine",
 	"main": "index.js",
   "author": "Thor Qin",

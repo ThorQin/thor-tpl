@@ -7,6 +7,12 @@ function getFn(template, options) {
 	return compile(template, options);
 }
 
+/**
+ * Render page asyncronizilly
+ * @param {string|function} template
+ * @param {any} data
+ * @param {any} options
+ */
 async function renderAsync(template, data, options) {
 	if (options instanceof Object) {
 		options.useAsync = true;
@@ -17,6 +23,12 @@ async function renderAsync(template, data, options) {
 	return await fn(data, options ? options.fn : null);
 }
 
+/**
+ * Render page
+ * @param {string|function} template
+ * @param {any} data
+ * @param {any} options
+ */
 function render(template, data, options) {
 	if (options instanceof Object) {
 		options.useAsync = false;
@@ -75,6 +87,12 @@ function _safe(t) {
 	});
 }
 
+/**
+ * Compile template function
+ * @param {string} template Template definition string
+ * @param {*} options Available options are 'useAsync' default false,
+ * 	'trace' function default null
+ */
 function compile(template, options = null) {
 	if (typeof template !== 'string') {
 		throw new Error('Invalid template!');
