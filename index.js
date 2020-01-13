@@ -81,6 +81,7 @@ const _SMAP = {
 	'\'': '&apos;'
 };
 function _safe(t) {
+	if (typeof t === 'undefined' || t === null || (typeof t === 'number' && isNaN(t))) return '';
 	return (t + '').replace(/<|>|&|'|"/g, s => {
 		let rs = _SMAP[s];
 		return rs || s;
