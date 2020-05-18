@@ -2,19 +2,31 @@
   "name": "thor-tpl",
   "version": "1.0.5",
   "description": "A simple JS Template Engine",
-	"main": "index.js",
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "author": "Thor Qin",
   "license": "MIT",
-	"private": false,
-	"repository": {
-		"type": "git",
-		"url": "https://gitee.com/thor.qin/thor-tpl.git"
-	},
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/thor.qin/thor-tpl.git"
+  },
   "devDependencies": {
-    "eslint": "^6.0.1",
-    "jest": "^24.8.0"
+    "@typescript-eslint/eslint-plugin": "^2.33.0",
+    "@typescript-eslint/parser": "^2.33.0",
+		"eslint": "^7.0.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "jest": "^26.0.1",
+		"prettier": "^2.0.5",
+		"typescript": "^3.9.2"
   },
   "scripts": {
+		"build": "tsc -P tsconfig.json",
+		"postbuild": "prettier --write ./lib",
     "test": "jest"
-  }
+  },
+  "dependencies": {}
 }
