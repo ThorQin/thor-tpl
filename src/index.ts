@@ -287,7 +287,7 @@ export function compile(template: string, options?: CompileOptions): CompiledFun
 	if (args.length > 0) {
 		func += `\tvar {${args.join(', ')}} = $data || {};\n`;
 	}
-	if (args.length > 0) {
+	if (fns.length > 0) {
 		func += `\tvar {${fns.join(', ')}} = $fn || {};\n`;
 	}
 	func += src;
