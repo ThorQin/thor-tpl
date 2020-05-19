@@ -298,3 +298,9 @@ export function compile(template: string, options?: CompileOptions): CompiledFun
 	}
 	return fn;
 }
+
+export default {
+	render,
+	renderAsync,
+	compile,
+};

@@ -45,4 +45,9 @@ export declare function render(
  * 	'trace' function default null
  */
 export declare function compile(template: string, options?: CompileOptions): CompiledFunction;
-export {};
+declare const _default: {
+	render: typeof render;
+	renderAsync: typeof renderAsync;
+	compile: typeof compile;
+};
+export default _default;
