@@ -1,4 +1,6 @@
-const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
+const AsyncFunction = Object.getPrototypeOf(async function () {
+	/* Used only for extract type */
+}).constructor;
 
 interface CompileOptions {
 	useAsync?: boolean;
@@ -11,50 +13,11 @@ interface TraceFunction {
 }
 
 interface CompiledFunction {
-	(data?: any, fn?: { [key: string]: Function } | null): string | Promise<string>;
+	(data?: unknown, fn?: { [key: string]: Function } | null): string | Promise<string>;
 }
 
-function getFn(template: string | CompiledFunction, options?: CompileOptions): CompiledFunction {
-	if (typeof template === 'function') {
-		return template;
-	}
-	return compile(template, options);
-}
-
-/**
- * Render page asyncronizilly
- * @param {string|CompiledFunction} template
- * @param {any} data
- * @param {any} options
- */
-export async function renderAsync(template: string | CompiledFunction, data?: any, options?: CompileOptions) {
-	if (options instanceof Object) {
-		options.useAsync = true;
-	} else {
-		options = { useAsync: true };
-	}
-	let fn = getFn(template, options);
-	return await fn(data, options ? options.fn : null);
-}
-
-/**
- * Render page
- * @param {string|CompiledFunction} template
- * @param {any} data
- * @param {any} options
- */
-export function render(template: string | CompiledFunction, data?: any, options?: CompileOptions) {
-	if (options instanceof Object) {
-		options.useAsync = false;
-	} else {
-		options = { useAsync: false };
-	}
-	let fn = getFn(template, options);
-	return fn(data, options ? options.fn : null);
-}
-
-function error(match: RegExpExecArray, msg: any = 'unexpected command') {
-	let newline = /\n/gu;
+function error(match: RegExpExecArray, msg = 'unexpected command'): void {
+	const newline = /\n/gu;
 	let rs;
 	let lines = 1;
 	while ((rs = newline.exec(match.input)) !== null) {
@@ -64,13 +27,7 @@ function error(match: RegExpExecArray, msg: any = 'unexpected command') {
 			break;
 		}
 	}
-	let message;
-	if (msg instanceof Object) {
-		message = msg.message;
-		lines += msg.lines - 1;
-	} else {
-		message = `Compile error: ${msg}: '${match[0]}'`;
-	}
+	const message = `Compile error: ${msg}: '${match[0]}'`;
 	throw new Error(`${message} at: line ${lines}`);
 }
 
@@ -94,10 +51,10 @@ const _SMAP: { [key: string]: string } = {
 	'"': '&quot;',
 	"'": '&apos;',
 };
-function _safe(t: any) {
+function _safe(t: unknown): string {
 	if (typeof t === 'undefined' || t === null || (typeof t === 'number' && isNaN(t))) return '';
 	return (t + '').replace(/<|>|&|'|"/g, (s) => {
-		let rs = _SMAP[s];
+		const rs = _SMAP[s];
 		return rs || s;
 	});
 }
@@ -114,39 +71,39 @@ export function compile(template: string, options?: CompileOptions): CompiledFun
 	}
 	options = options || {};
 	let src = '';
-	let regex = /\{\{((?:.|[\n\r])+?)\}\}/gm;
+	const regex = /\{\{((?:.|[\n\r])+?)\}\}/gm;
 	let match;
 	let pos = 0;
-	let cmdStack: {
+	const cmdStack: {
 		cmd: string;
 		match: RegExpExecArray;
 	}[] = [];
-	let args: string[] = [];
-	let fns: string[] = [];
+	const args: string[] = [];
+	const fns: string[] = [];
 	let level = 1;
 	let serial = 0;
 	let useSafeText = false;
-	function getTempName(name: string) {
+	function getTempName(name: string): string {
 		return `_${name}_${++serial}`;
 	}
-	function lastCmd() {
+	function lastCmd(): string | null {
 		return cmdStack.length > 0 ? cmdStack[cmdStack.length - 1].cmd : null;
 	}
-	function addSpace(offset = 0) {
+	function addSpace(offset = 0): string {
 		let sp = '';
 		for (let i = 0; i < level + offset; i++) {
 			sp += '\t';
 		}
 		return sp;
 	}
-	function addSrcText(str: string) {
+	function addSrcText(str: string): string {
 		if (!str) {
 			return '';
 		}
 		return `${addSpace()}_src_ += ${JSON.stringify(str)};\n`;
 	}
-	function addLoop(idx: string, declare: string, exp: string) {
-		let arrName = getTempName('a');
+	function addLoop(idx: string, declare: string, exp: string): string {
+		const arrName = getTempName('a');
 		if (!idx) {
 			idx = getTempName('i');
 		}
@@ -157,32 +114,32 @@ export function compile(template: string, options?: CompileOptions): CompiledFun
 		}
 		return src;
 	}
-	function addIf(exp: string) {
+	function addIf(exp: string): string {
 		return `${addSpace()}if (${exp}) {\n`;
 	}
-	function addElseIf(exp: string) {
+	function addElseIf(exp: string): string {
 		return `${addSpace()}} else if (${exp}) {\n`;
 	}
-	function addElse() {
+	function addElse(): string {
 		return `${addSpace()}} else {\n`;
 	}
-	function addEnd() {
+	function addEnd(): string {
 		return `${addSpace()}}\n`;
 	}
-	function addExec(exp: string) {
+	function addExec(exp: string): string {
 		return `${addSpace()}${exp};\n`;
 	}
-	function addSafeText(exp: string) {
+	function addSafeText(exp: string): string {
 		useSafeText = true;
 		return `${addSpace()}_src_ += _safe(${exp});\n`;
 	}
-	function addUnsafeText(exp: string) {
+	function addUnsafeText(exp: string): string {
 		return `${addSpace()}_src_ += (${exp});\n`;
 	}
-	function addDeclare(exp: string, match: RegExpExecArray, arr: string[]) {
-		let ps = exp.split(',');
+	function addDeclare(exp: string, match: RegExpExecArray, arr: string[]): void {
+		const ps = exp.split(',');
 		for (let i = 0; i < ps.length; i++) {
-			let p = ps[i].trim();
+			const p = ps[i].trim();
 			if (!ID.test(p)) {
 				error(match, `Invalid declare variable name: ${p}`);
 			}
@@ -196,7 +153,7 @@ export function compile(template: string, options?: CompileOptions): CompiledFun
 	while ((match = regex.exec(template)) != null) {
 		src += addSrcText(template.substring(pos, match.index));
 		pos = regex.lastIndex;
-		let cmd = match[1].trim();
+		const cmd = match[1].trim();
 		let m;
 		if (cmd[0] === '#') {
 			continue;
@@ -233,7 +190,7 @@ export function compile(template: string, options?: CompileOptions): CompiledFun
 			});
 			level++;
 		} else if ((m = CMD_ELSE_IF.exec(cmd)) != null) {
-			let last = lastCmd();
+			const last = lastCmd();
 			if (last === 'if' || last === 'elseif') {
 				level--;
 				src += addElseIf(m[1]);
@@ -246,7 +203,7 @@ export function compile(template: string, options?: CompileOptions): CompiledFun
 				error(match);
 			}
 		} else if ((m = CMD_ELSE.exec(cmd)) != null) {
-			let last = lastCmd();
+			const last = lastCmd();
 			if (last === 'if' || last === 'elseif') {
 				level--;
 				src += addElse();
@@ -259,7 +216,7 @@ export function compile(template: string, options?: CompileOptions): CompiledFun
 				error(match);
 			}
 		} else if ((m = CMD_END_IF.exec(cmd)) != null) {
-			let last = lastCmd();
+			const last = lastCmd();
 			if (last === 'if' || last === 'elseif' || last === 'else') {
 				while (cmdStack.length > 0 && cmdStack.pop()?.cmd !== 'if');
 				level--;
@@ -277,7 +234,7 @@ export function compile(template: string, options?: CompileOptions): CompiledFun
 	if (pos < template.length) {
 		src += addSrcText(template.substring(pos));
 	}
-	let Fn = options.useAsync ? AsyncFunction : Function;
+	const Fn = options.useAsync ? AsyncFunction : Function;
 	let func = '\t"use strict";\n';
 	if (useSafeText) {
 		func += `\tconst _SMAP = ${JSON.stringify(_SMAP)};\n`;
@@ -292,11 +249,54 @@ export function compile(template: string, options?: CompileOptions): CompiledFun
 	}
 	func += src;
 	func += '\treturn _src_;';
-	let fn: CompiledFunction = new Fn('$data', '$fn', func);
+	const fn: CompiledFunction = new Fn('$data', '$fn', func);
 	if (options && typeof options.trace === 'function') {
 		options.trace(fn, options);
 	}
 	return fn;
+}
+
+function getFn(template: string | CompiledFunction, options?: CompileOptions): CompiledFunction {
+	if (typeof template === 'function') {
+		return template;
+	}
+	return compile(template, options);
+}
+
+/**
+ * Render page asyncronizilly
+ * @param {string|CompiledFunction} template
+ * @param {any} data
+ * @param {any} options
+ */
+export async function renderAsync(
+	template: string | CompiledFunction,
+	data?: unknown,
+	options?: CompileOptions
+): Promise<string> {
+	if (options instanceof Object) {
+		options.useAsync = true;
+	} else {
+		options = { useAsync: true };
+	}
+	const fn = getFn(template, options);
+	return await fn(data, options ? options.fn : null);
+}
+
+/**
+ * Render page
+ * @param {string|CompiledFunction} template
+ * @param {any} data
+ * @param {any} options
+ */
+export function render(template: string | CompiledFunction, data?: unknown, options?: CompileOptions): string {
+	if (options instanceof Object) {
+		options.useAsync = false;
+	} else {
+		options = { useAsync: false };
+	}
+	const fn = getFn(template, options);
+	return fn(data, options ? options.fn : null) as string;
 }
 
 export default {

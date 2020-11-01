@@ -10,12 +10,19 @@ interface TraceFunction {
 }
 interface CompiledFunction {
 	(
-		data?: any,
+		data?: unknown,
 		fn?: {
 			[key: string]: Function;
 		} | null
 	): string | Promise<string>;
 }
+/**
+ * Compile template function
+ * @param {string} template Template definition string
+ * @param {CompileOptions} options Available options are 'useAsync' default false,
+ * 	'trace' function default null
+ */
+export declare function compile(template: string, options?: CompileOptions): CompiledFunction;
 /**
  * Render page asyncronizilly
  * @param {string|CompiledFunction} template
@@ -24,7 +31,7 @@ interface CompiledFunction {
  */
 export declare function renderAsync(
 	template: string | CompiledFunction,
-	data?: any,
+	data?: unknown,
 	options?: CompileOptions
 ): Promise<string>;
 /**
@@ -33,18 +40,7 @@ export declare function renderAsync(
  * @param {any} data
  * @param {any} options
  */
-export declare function render(
-	template: string | CompiledFunction,
-	data?: any,
-	options?: CompileOptions
-): string | Promise<string>;
-/**
- * Compile template function
- * @param {string} template Template definition string
- * @param {CompileOptions} options Available options are 'useAsync' default false,
- * 	'trace' function default null
- */
-export declare function compile(template: string, options?: CompileOptions): CompiledFunction;
+export declare function render(template: string | CompiledFunction, data?: unknown, options?: CompileOptions): string;
 declare const _default: {
 	render: typeof render;
 	renderAsync: typeof renderAsync;
