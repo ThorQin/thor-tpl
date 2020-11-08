@@ -1,14 +1,14 @@
-interface CompileOptions {
+export interface CompileOptions {
 	useAsync?: boolean;
 	trace?: TraceFunction;
 	fn?: {
 		[key: string]: Function;
 	};
 }
-interface TraceFunction {
+export interface TraceFunction {
 	(fn: Function, options: CompileOptions): void;
 }
-interface CompiledFunction {
+export interface CompiledFunction {
 	(
 		data?: unknown,
 		fn?: {
