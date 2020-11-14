@@ -1,6 +1,6 @@
 {
   "name": "thor-tpl",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "A simple JS Template Engine",
   "main": "./dist/index.js",
   "author": "Thor Qin",
@@ -20,8 +20,8 @@
     "typescript": "^3.9.2"
   },
   "scripts": {
-		"build-cjs": "tsc -P tsconfig.json",
-		"build": "rm -rf ./dist/* && npm run build-cjs",
+    "build-cjs": "tsc -P tsconfig.json",
+    "build": "rm -rf ./dist/* && npm run build-cjs",
     "postbuild": "prettier --write ./dist"
   },
   "dependencies": {}

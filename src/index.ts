@@ -51,12 +51,36 @@ const _SMAP: { [key: string]: string } = {
 	'"': '&quot;',
 	"'": '&apos;',
 };
+
+type Iteratable = {
+	data: unknown[];
+	type: 'array' | 'object';
+};
+
 function _safe(t: unknown): string {
 	if (typeof t === 'undefined' || t === null || (typeof t === 'number' && isNaN(t))) return '';
 	return (t + '').replace(/<|>|&|'|"/g, (s) => {
 		const rs = _SMAP[s];
 		return rs || s;
 	});
+}
+function _iterator(obj: unknown): Iteratable {
+	if (obj instanceof Array) {
+		return {
+			data: obj,
+			type: 'array',
+		};
+	} else if (obj && typeof obj === 'object') {
+		return {
+			data: Object.keys(obj),
+			type: 'object',
+		};
+	} else {
+		return {
+			data: [],
+			type: 'array',
+		};
+	}
 }
 
 /**
@@ -107,8 +131,14 @@ export function compile(template: string, options?: CompileOptions): CompiledFun
 		if (!idx) {
 			idx = getTempName('i');
 		}
-		let src = `${addSpace()}let ${arrName} = (${exp});\n`;
-		src += `${addSpace()}for (let ${idx} = 0; ${idx} < ${arrName}.length; ${idx}++) {\n`;
+		let src = `${addSpace()}let ${arrName} = (${exp});
+${addSpace()}for (let __i__ = 0, __iterator__ = _iterator(${arrName}); __i__ < __iterator__.data.length; __i__++) {
+${addSpace(1)}let ${idx};
+${addSpace(1)}if (__iterator__.type === 'array') {
+${addSpace(2)}${idx} = __i__;
+${addSpace(1)}} else {
+${addSpace(2)}${idx} = __iterator__.data[__i__];
+${addSpace(1)}}`;
 		if (declare !== '_') {
 			src += `${addSpace(1)}let ${declare} = ${arrName}[${idx}];\n`;
 		}
@@ -236,6 +266,7 @@ export function compile(template: string, options?: CompileOptions): CompiledFun
 	}
 	const Fn = options.useAsync ? AsyncFunction : Function;
 	let func = '\t"use strict";\n';
+	func += _iterator.toString().replace(/^/gm, '\t') + '\n';
 	if (useSafeText) {
 		func += `\tconst _SMAP = ${JSON.stringify(_SMAP)};\n`;
 		func += _safe.toString().replace(/^/gm, '\t') + '\n';

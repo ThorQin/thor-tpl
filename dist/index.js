@@ -43,6 +43,24 @@ function _safe(t) {
 		return rs || s;
 	});
 }
+function _iterator(obj) {
+	if (obj instanceof Array) {
+		return {
+			data: obj,
+			type: 'array',
+		};
+	} else if (obj && typeof obj === 'object') {
+		return {
+			data: Object.keys(obj),
+			type: 'object',
+		};
+	} else {
+		return {
+			data: [],
+			type: 'array',
+		};
+	}
+}
 /**
  * Compile template function
  * @param {string} template Template definition string
@@ -88,8 +106,14 @@ function compile(template, options) {
 		if (!idx) {
 			idx = getTempName('i');
 		}
-		let src = `${addSpace()}let ${arrName} = (${exp});\n`;
-		src += `${addSpace()}for (let ${idx} = 0; ${idx} < ${arrName}.length; ${idx}++) {\n`;
+		let src = `${addSpace()}let ${arrName} = (${exp});
+${addSpace()}for (let __i__ = 0, __iterator__ = _iterator(${arrName}); __i__ < __iterator__.data.length; __i__++) {
+${addSpace(1)}let ${idx};
+${addSpace(1)}if (__iterator__.type === 'array') {
+${addSpace(2)}${idx} = __i__;
+${addSpace(1)}} else {
+${addSpace(2)}${idx} = __iterator__.data[__i__];
+${addSpace(1)}}`;
 		if (declare !== '_') {
 			src += `${addSpace(1)}let ${declare} = ${arrName}[${idx}];\n`;
 		}
@@ -216,6 +240,7 @@ function compile(template, options) {
 	}
 	const Fn = options.useAsync ? AsyncFunction : Function;
 	let func = '\t"use strict";\n';
+	func += _iterator.toString().replace(/^/gm, '\t') + '\n';
 	if (useSafeText) {
 		func += `\tconst _SMAP = ${JSON.stringify(_SMAP)};\n`;
 		func += _safe.toString().replace(/^/gm, '\t') + '\n';
