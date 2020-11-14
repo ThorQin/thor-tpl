@@ -1,3 +1,6 @@
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
+exports.render = exports.renderAsync = exports.compile = void 0;
 const AsyncFunction = Object.getPrototypeOf(async function () {
 	/* Used only for extract type */
 }).constructor;
@@ -46,7 +49,7 @@ function _safe(t) {
  * @param {CompileOptions} options Available options are 'useAsync' default false,
  * 	'trace' function default null
  */
-export function compile(template, options) {
+function compile(template, options) {
 	if (typeof template !== 'string') {
 		throw new Error('Invalid template!');
 	}
@@ -232,6 +235,7 @@ export function compile(template, options) {
 	}
 	return fn;
 }
+exports.compile = compile;
 function getFn(template, options) {
 	if (typeof template === 'function') {
 		return template;
@@ -244,7 +248,7 @@ function getFn(template, options) {
  * @param {any} data
  * @param {any} options
  */
-export async function renderAsync(template, data, options) {
+async function renderAsync(template, data, options) {
 	if (options instanceof Object) {
 		options.useAsync = true;
 	} else {
@@ -253,13 +257,14 @@ export async function renderAsync(template, data, options) {
 	const fn = getFn(template, options);
 	return await fn(data, options ? options.fn : null);
 }
+exports.renderAsync = renderAsync;
 /**
  * Render page
  * @param {string|CompiledFunction} template
  * @param {any} data
  * @param {any} options
  */
-export function render(template, data, options) {
+function render(template, data, options) {
 	if (options instanceof Object) {
 		options.useAsync = false;
 	} else {
@@ -268,8 +273,10 @@ export function render(template, data, options) {
 	const fn = getFn(template, options);
 	return fn(data, options ? options.fn : null);
 }
-export default {
+exports.render = render;
+exports.default = {
 	render,
 	renderAsync,
 	compile,
 };
+//# sourceMappingURL=index.js.map
