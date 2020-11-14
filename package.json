@@ -1,11 +1,9 @@
 {
   "name": "thor-tpl",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "A simple JS Template Engine",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "exports": "./dist/esm/index.js",
   "author": "Thor Qin",
   "license": "MIT",
   "private": false,
@@ -20,10 +18,13 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3",
     "prettier": "^2.0.5",
-    "typescript": "^3.9.2"
+    "typescript": "^3.9.2",
+    "renamer": "^2.0.1"
   },
   "scripts": {
-    "build": "tsc -P tsconfig.json",
+    "build-esm": "tsc --outDir ./dist/esm  -P tsconfig.json && renamer --find js --replace mjs \"./dist/esm/**\"",
+    "build-cjs": "tsc --module commonjs --outDir ./dist/cjs -P tsconfig.json",
+    "build": "rm -rf ./dist/* && npm run build-esm && npm run build-cjs",
     "postbuild": "prettier --write ./dist"
   },
   "dependencies": {}
