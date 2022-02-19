@@ -10,19 +10,18 @@
     "type": "git",
     "url": "https://gitee.com/thor.qin/thor-tpl.git"
   },
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.34.0",
-    "@typescript-eslint/parser": "^2.34.0",
-    "eslint": "^7.26.0",
-    "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "prettier": "^2.3.0",
-    "typescript": "^3.9.9"
-  },
   "scripts": {
     "build-cjs": "tsc -P tsconfig.json",
     "build": "rm -rf ./dist/* && npm run build-cjs",
     "postbuild": "prettier --write ./dist"
   },
-  "dependencies": {}
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.5"
+  }
 }
